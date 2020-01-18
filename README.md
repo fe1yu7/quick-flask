@@ -13,7 +13,7 @@
 
 
 ### 第二步
-根目录==app.py==中引入resource下个个模块的蓝图（blueprint）注册
+根目录```app.py```中引入resource下个个模块的蓝图（blueprint）注册
 ```python
 def register_blueprints(flask_app):
     flask_app.register_blueprint(user_blueprint, url_prefix="/user")  # 用户
