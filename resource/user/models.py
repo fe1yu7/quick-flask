@@ -11,7 +11,7 @@ class User(db.Model):
     id = Column(Integer, autoincrement=True, primary_key=True)
     phone = Column(VARCHAR(20), nullable=True)
     nickname = Column(VARCHAR(30))
-    is_able = Column(TINYINT, nullable=False, default=1, comment="是否启用")
+    is_able = Column(TINYINT(), default="1", comment="是否启用")
     salt = Column(VARCHAR(30), comment="密码加盐")
     password = Column(VARCHAR(61))
 

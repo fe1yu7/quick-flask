@@ -6,7 +6,7 @@ from marshmallow import fields
 
 from ext import db
 from common.response import json_response
-from common.utils import valid_phone
+from common.utils import valid_phone, valid_password
 from common.jwt_utils import login_required, get_access_token
 from resource.user.models import User
 from resource.user.schema import UserSchema
@@ -19,33 +19,22 @@ class UserResource(Resource):
         "password": fields.String(required=True),
     }, locations=("json", ))
     def post(self, **kwargs):
-        """"""
-        exist_user = User.query.filter_by(phone=kwargs.get("phone")).first()
+        exist_user = db.session.query(User.id).filter_by(phone=kwargs["phone"]).first()
         if exist_user:
-            return {
-                "msg": "用户已经存在"
-            }
+            return json_response(message="user exists")
         user = User(**kwargs)
         db.session.add(user)
         db.session.commit()
-        return {
-            "msg": "用户创建成功",
-            "access_token": get_access_token(user.id)
-        }
-
-    @staticmethod
-    def get():
-        user_paginate = User.query.paginate()
-        user_schema = UserSchema(many=True)
-        data = user_schema.dump(user_paginate.items).data
-        return json_response(data=data, paginate=user_paginate, status=404)
+        return json_response(message="user create success", data={
+            "access_token": get_access_token(user)
+        })
 
 
 class UserPhoneResource(Resource):
+    @login_required
     @use_kwargs({
         "phone": fields.String(required=True, validate=valid_phone)
     })
-    @login_required
     def put(self, phone):
 
         current_user = get_current_user()
@@ -53,7 +42,7 @@ class UserPhoneResource(Resource):
         user_phone = db.session.query(User.phone).filter(
             User.phone == phone
         ).first()
-        if user_phone and user_phone.phone != current_user.phone:
+        if user_phone:
             return json_response(message="exists phone", status=403)
 
         try:
@@ -66,3 +55,18 @@ class UserPhoneResource(Resource):
             return json_response(message="bind phone failed")
         else:
             return json_response(message="bind phone success")
+
+
+class UserLoginResource(Resource):
+    @use_kwargs({
+        "phone": fields.String(required=True, validate=valid_phone),
+        "password": fields.String(required=True, validate=valid_password)
+    })
+    def post(self, phone, password):
+        user = db.session.query(User).filter(User.phone == phone, User.password == password).first()
+        if not user:
+            return json_response(message='username or password error', status=403)
+
+        return json_response(data={
+            "access_token": get_access_token(user)
+        })

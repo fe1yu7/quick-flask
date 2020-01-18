@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, create_access_token, create_refresh_token
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, create_access_token, create_refresh_token, get_current_user
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
 from common.response import json_response
@@ -10,7 +10,7 @@ from resource.user.models import User
 
 @jwt.user_loader_callback_loader
 def user_loader_callback(identity):
-    return User.query.get(identity["id"])
+    return User.query.filter_by(id=identity["id"], is_able=1).first()
 
 
 def login_required(fn):
@@ -20,12 +20,11 @@ def login_required(fn):
             verify_jwt_in_request()
         except NoAuthorizationError as e:
             _ = e
-            return json_response(status=403)
-        identity = get_jwt_identity()
-        user = db.session.query(User.id).filter_by(id=identity["id"], is_able=1).first()
+            return json_response(message="not authorization", status=401)
+        user = get_current_user()
         if not user:
             return json_response(message="account is disabled", status=403)
-        return fn(*args, **kwargs)
+        return fn(user=user, *args, **kwargs)
 
     return wrapper
 
