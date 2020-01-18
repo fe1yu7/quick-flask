@@ -7,7 +7,7 @@ from marshmallow import fields
 from ext import db
 from common.response import json_response
 from common.utils import valid_phone, valid_password
-from common.jwt_utils import login_required, get_access_token
+from common.auth_utils import login_required, get_access_token, permission_required
 from resource.user.models import User
 from resource.user.schema import UserSchema
 
@@ -70,3 +70,7 @@ class UserLoginResource(Resource):
         return json_response(data={
             "access_token": get_access_token(user)
         })
+
+    @permission_required('会员中心')
+    def get(self):
+        return 'xxx'

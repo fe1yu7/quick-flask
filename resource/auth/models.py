@@ -3,7 +3,6 @@ from sqlalchemy.dialects.mysql import TINYINT
 from sqlalchemy.orm import relationship, backref
 
 from ext import db
-from resource.user.models import User
 
 
 class Role(db.Model):
@@ -18,6 +17,8 @@ class Permission(db.Model):
     name = Column(VARCHAR(32), comment="名称")
     url = Column(VARCHAR(62), comment="前端路由")
     action = Column(VARCHAR(32), comment="增删盖茶")
+    description = Column(VARCHAR(32), comment="描述")
+    order_field = Column(Integer(), default=1)
     parent_id = db.Column(Integer(), ForeignKey("permission.id", ondelete="CASCADE"))
 
     child_permissions = relationship("Permission", back_populates="parent_permission", lazy="dynamic")

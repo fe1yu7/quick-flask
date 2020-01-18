@@ -6,7 +6,7 @@ from sqlalchemy import or_, and_, desc, asc
 
 from common.response import json_response
 from ext import db
-from common.jwt_utils import login_required
+from common.auth_utils import login_required
 from resource.auth.models import Permission, Role, UserRole, RolePermission
 from resource.auth.schema import RoleSchema, PermissionSchema
 
