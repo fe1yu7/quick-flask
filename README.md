@@ -16,7 +16,7 @@
 根目录==app.py==中引入resource下个个模块的蓝图（blueprint）注册
 ```python
 def register_blueprints(flask_app):
-    flask_app.register_blueprint(user_blueprint, url_prefix="/user")
-    flask_app.register_blueprint(auth_blueprint, url_prefix="/auth")
+    flask_app.register_blueprint(user_blueprint, url_prefix="/user")  # 用户
+    flask_app.register_blueprint(auth_blueprint, url_prefix="/auth")  # 权限
     #     ...
 ```
