@@ -23,16 +23,17 @@ def register_blueprints(flask_app):
 
 ### 第三步
 
-权限表关系
+#### 权限表关系
 
 ```text
 user -------- user_role -------- role -------- role_permission -------- permission
 ```
 
-数据库中role_permission表数据添加
+#### role_permission（角色权限表）数据添加
 
 role_permission（角色权限表）中只需要添加 permission（权限）表的子数据就，接口中就能直接查询到它的父级并返回
 ![角色标签表role_permission](./static/rpb.png)
 
-如何在数据库中添加permission
+#### permission（权限）数据添加
+
 ![权限表关系permission](./static/pdb.png)
